@@ -1,0 +1,60 @@
+version: "3.1"
+services:
+
+    mysql:
+      image: mysql:5.7
+      container_name: usr-mysql
+      working_dir: /application
+      volumes:
+        - ./application:/application
+      environment:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      ports:
+        - "${MYSQL_HOST_PORT}:${MYSQL_CONTAINER_PORT}"
+
+    rabbitmq:
+      image: "rabbitmq:3-management"
+      container_name: usr-rabbitmq
+      environment:
+        RABBITMQ_ERLANG_COOKIE: "SWQOKDFODSQADLRPCDLNMAAEQG"
+        RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+        RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+        RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
+      ports:
+        - "${RABBITMQ_MGMT_HOST_PORT}:${RABBITMQ_MGMT_CONTAINER_PORT}"
+        - "${RABBITMQ_HOST_PORT}:${RABBITMQ_CONTAINER_PORT}"
+
+    sphinxsearch:
+      image: sphinx:latest
+      container_name: usr-sphinxsearch
+      volumes:
+        - ./docker/sphinx/sphinx.conf:/etc/sphinxsearch/sphinx.conf
+
+    webserver:
+      image: nginx:alpine
+      container_name: usr-webserver
+      working_dir: /application
+      volumes:
+          - ./application:/application
+          - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - "8080:80"
+
+    php-fpm:
+      build: phpdocker/php-fpm
+      container_name: usr-php-fpm
+      working_dir: /application
+      volumes:
+        - ./application:/application
+        - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.3/fpm/conf.d/99-overrides.ini
+      environment:
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        RABBITMQ_USER: ${RABBITMQ_USER}
+        RABBITMQ_PASS: ${RABBITMQ_PASSWORD}
+        RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+        RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_CONTAINER_PORT}
