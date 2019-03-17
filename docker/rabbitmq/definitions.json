@@ -1,0 +1,87 @@
+{
+  "rabbit_version": "3.7.12",
+  "users": [
+    {
+      "name": "$RABBITMQ_USER",
+      "password": "$RABBITMQ_PASSWORD",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "$RABBITMQ_VHOST"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "$RABBITMQ_USER",
+      "vhost": "$RABBITMQ_VHOST",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "topic_permissions": [],
+  "parameters": [],
+  "global_parameters": [
+    {
+      "name": "cluster_name",
+      "value": "rabbit@2319e5fa453f"
+    }
+  ],
+  "policies": [],
+  "queues": [
+    {
+      "name": "$RABBITMQ_INDEX_QUEUE",
+      "vhost": "$RABBITMQ_VHOST",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "$RABBITMQ_CREATE_QUEUE",
+      "vhost": "$RABBITMQ_VHOST",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "$RABBITMQ_INDEX_EXCHANGE",
+      "vhost": "$RABBITMQ_VHOST",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "$RABBITMQ_CREATE_EXCHANGE",
+      "vhost": "$RABBITMQ_VHOST",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "$RABBITMQ_CREATE_EXCHANGE",
+      "vhost": "$RABBITMQ_VHOST",
+      "destination": "$RABBITMQ_CREATE_QUEUE",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "$RABBITMQ_INDEX_EXCHANGE",
+      "vhost": "$RABBITMQ_VHOST",
+      "destination": "$RABBITMQ_INDEX_QUEUE",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    }
+  ]
+}

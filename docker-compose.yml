@@ -16,8 +16,19 @@ services:
         - "${MYSQL_HOST_PORT}:${MYSQL_CONTAINER_PORT}"
 
     rabbitmq:
-      image: "rabbitmq:3-management"
+      build:
+        context: ./docker/rabbitmq
+        args:
+          RABBITMQ_USER_ARG: ${RABBITMQ_USER}
+          RABBITMQ_PASSWORD_ARG: ${RABBITMQ_PASSWORD}
+          RABBITMQ_VHOST_ARG: ${RABBITMQ_VHOST}
+          RABBITMQ_CREATE_EXCHANGE_ARG: ${RABBITMQ_CREATE_EXCHANGE}
+          RABBITMQ_CREATE_QUEUE_ARG: ${RABBITMQ_CREATE_QUEUE}
+          RABBITMQ_INDEX_EXCHANGE_ARG: ${RABBITMQ_INDEX_EXCHANGE}
+          RABBITMQ_INDEX_QUEUE_ARG: ${RABBITMQ_INDEX_QUEUE}
       container_name: usr-rabbitmq
+#      volumes:
+#        - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
       environment:
         RABBITMQ_ERLANG_COOKIE: "SWQOKDFODSQADLRPCDLNMAAEQG"
         RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
@@ -27,11 +38,15 @@ services:
         - "${RABBITMQ_MGMT_HOST_PORT}:${RABBITMQ_MGMT_CONTAINER_PORT}"
         - "${RABBITMQ_HOST_PORT}:${RABBITMQ_CONTAINER_PORT}"
 
-    sphinxsearch:
-      image: sphinx:latest
-      container_name: usr-sphinxsearch
+    manticoresearch:
+      image: manticoresearch/manticore
+      container_name: usr-manticoresearch
       volumes:
-        - ./docker/sphinx/sphinx.conf:/etc/sphinxsearch/sphinx.conf
+        - ./docker/manticore/sphinx.conf:/etc/sphinxsearch/sphinx.conf
+        - /data
+      ports:
+        - "9306:9306"
+        - "9312:9312"
 
     webserver:
       image: nginx:alpine
@@ -44,7 +59,7 @@ services:
        - "8080:80"
 
     php-fpm:
-      build: phpdocker/php-fpm
+      build: docker/php-fpm
       container_name: usr-php-fpm
       working_dir: /application
       volumes:
@@ -57,4 +72,8 @@ services:
         RABBITMQ_USER: ${RABBITMQ_USER}
         RABBITMQ_PASS: ${RABBITMQ_PASSWORD}
         RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+        RABBITMQ_CREATE_EXCHANGE: ${RABBITMQ_CREATE_EXCHANGE}
+        RABBITMQ_CREATE_QUEUE: ${RABBITMQ_CREATE_QUEUE}
+        RABBITMQ_INDEX_EXCHANGE: ${RABBITMQ_INDEX_EXCHANGE}
+        RABBITMQ_INDEX_QUEUE: ${RABBITMQ_INDEX_QUEUE}
         RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_CONTAINER_PORT}
