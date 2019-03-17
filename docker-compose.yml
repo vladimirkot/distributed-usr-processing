@@ -2,11 +2,12 @@ version: "3.1"
 services:
 
     mysql:
-      image: mysql:5.7
+      build:
+        context: ./docker/mysql
       container_name: usr-mysql
-      working_dir: /application
+      command: --init-file /data/application/init.sql
       volumes:
-        - ./application:/application
+        - ./docker/mysql/init.sql:/data/application/init.sql
       environment:
         MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
         MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -14,6 +15,15 @@ services:
         MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       ports:
         - "${MYSQL_HOST_PORT}:${MYSQL_CONTAINER_PORT}"
+
+    phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      container_name: phpmyadmin
+      environment:
+        - PMA_ARBITRARY=1
+      restart: always
+      ports:
+        - 8090:80
 
     rabbitmq:
       build:
@@ -27,8 +37,6 @@ services:
           RABBITMQ_INDEX_EXCHANGE_ARG: ${RABBITMQ_INDEX_EXCHANGE}
           RABBITMQ_INDEX_QUEUE_ARG: ${RABBITMQ_INDEX_QUEUE}
       container_name: usr-rabbitmq
-#      volumes:
-#        - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
       environment:
         RABBITMQ_ERLANG_COOKIE: "SWQOKDFODSQADLRPCDLNMAAEQG"
         RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
