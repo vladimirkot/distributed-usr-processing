@@ -38,14 +38,14 @@ class User
 
     /**
      * @var ArrayCollection
-     * One user has many phones
-     * @ORM\OneToMany(targetEntity="Phone", mappedBy="user")
+     * One user has many phone numbers
+     * @ORM\OneToMany(targetEntity="PhoneNumber", mappedBy="user")
      */
-    private $phones;
+    private $phoneNumbers;
 
     public function __construct()
     {
-        $this->phones = new ArrayCollection();
+        $this->phoneNumbers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -77,5 +77,16 @@ class User
         return $this;
     }
 
+    public function getPhoneNumbers(): ArrayCollection
+    {
+        return $this->phoneNumbers;
+    }
+
+    public function setPhoneNumbers(ArrayCollection $phoneNumbers): self
+    {
+        $this->phoneNumbers = $phoneNumbers;
+
+        return $this;
+    }
 
 }

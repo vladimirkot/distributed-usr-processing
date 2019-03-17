@@ -5,12 +5,12 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Phone
+ * PhoneNumber
  *
  * @ORM\Table(name="phone", indexes={@ORM\Index(name="user_id", columns={"user_id"})})
  * @ORM\Entity
  */
-class Phone
+class PhoneNumber
 {
     /**
      * @var int
@@ -31,7 +31,7 @@ class Phone
     /**
      * @var \User
      *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="phones")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="phoneNumbers")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      * })
