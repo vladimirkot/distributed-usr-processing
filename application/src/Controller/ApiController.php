@@ -9,6 +9,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Producer\UsersCreateProducer;
 
 class ApiController extends AbstractController
 {
@@ -18,7 +19,8 @@ class ApiController extends AbstractController
     public function users_create(
         Request $request,
         SerializerInterface $serializer,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        UsersCreateProducer $producer
     )
     {
 
@@ -39,7 +41,14 @@ class ApiController extends AbstractController
             return new Response($errorsString, Response::HTTP_BAD_REQUEST);
         }
 
-        return new Response("success", Response::HTTP_CREATED);
+        try{
+            $producer->publish($request->getContent());
+            return new Response("success", Response::HTTP_CREATED);
+        }
+        catch(\Exception $e){
+            return new Response("Fail", Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     public function users_get()

@@ -1,0 +1,24 @@
+old_sound_rabbit_mq:
+    connections:
+        default:
+            url: '%env(RABBITMQ_URL)%'
+    producers:
+        users_create:
+            #class: App\Producer\UsersCreateProducer
+            connection:       default
+            exchange_options: { name: '%env(RABBITMQ_CREATE_EXCHANGE)%', type: fanout }
+        users_index:
+            #class: App\Producer\UsersIndexProducer
+            connection:       default
+            exchange_options: { name: '%env(RABBITMQ_INDEX_EXCHANGE)%', type: fanout }
+    consumers:
+        users_create:
+            connection:       default
+            exchange_options: { name: '%env(RABBITMQ_CREATE_EXCHANGE)%', type: fanout }
+            queue_options:    { name: '%env(RABBITMQ_CREATE_QUEUE)%'}
+            callback:         App\Consumer\UsersCreateConsumer
+        users_index:
+            connection:       default
+            exchange_options: { name: '%env(RABBITMQ_INDEX_EXCHANGE)%', type: fanout }
+            queue_options:    { name: '%env(RABBITMQ_INDEX_QUEUE)%'}
+            callback:         App\Consumer\UsersIndexConsumer

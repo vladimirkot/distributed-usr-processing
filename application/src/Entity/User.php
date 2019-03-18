@@ -42,7 +42,7 @@ class User
     /**
      * @var ArrayCollection
      * One user has many phone numbers
-     * @ORM\OneToMany(targetEntity="PhoneNumber", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="PhoneNumber", mappedBy="user", cascade={"persist", "remove"})
      *
      * @Assert\All({
      * @Assert\Type(type="App\Entity\PhoneNumber"),

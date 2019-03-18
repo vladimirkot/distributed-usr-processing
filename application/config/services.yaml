@@ -32,3 +32,17 @@ services:
         autoconfigure: true
         tags:
             - { name: serializer.normalizer }
+
+    App\Producer\UsersCreateProducer:
+        public: true
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $producer: '@old_sound_rabbit_mq.users_create_producer'
+
+    App\Producer\UsersIndexProducer:
+        public: true
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $producer: '@old_sound_rabbit_mq.users_index_producer'
