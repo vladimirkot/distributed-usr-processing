@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * PhoneNumber
@@ -25,6 +26,14 @@ class PhoneNumber
      * @var string
      *
      * @ORM\Column(name="phone_no", type="string", length=12, nullable=false, options={"fixed"=true})
+     *
+     * @Assert\NotBlank
+     * @Assert\Regex(
+     *     pattern="/^\d{3} \d{3}-\d{4}/",
+     *     match=true,
+     *     message="PhoneNumber format should be '/\d{3} \d{3}-\d{4}/'"
+     * )
+     *
      */
     private $phoneNo;
 
@@ -35,6 +44,7 @@ class PhoneNumber
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      * })
+     *
      */
     private $user;
 

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * User
@@ -26,6 +27,7 @@ class User
      * @var string
      *
      * @ORM\Column(name="first_name", type="string", length=150, nullable=false)
+     * @Assert\NotBlank
      */
     private $firstName;
 
@@ -33,6 +35,7 @@ class User
      * @var string
      *
      * @ORM\Column(name="last_name", type="string", length=150, nullable=false)
+     * @Assert\NotBlank
      */
     private $lastName;
 
@@ -40,6 +43,12 @@ class User
      * @var ArrayCollection
      * One user has many phone numbers
      * @ORM\OneToMany(targetEntity="PhoneNumber", mappedBy="user")
+     *
+     * @Assert\All({
+     * @Assert\Type(type="App\Entity\PhoneNumber"),
+     * })
+     * @Assert\Valid
+     *
      */
     private $phoneNumbers;
 
