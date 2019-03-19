@@ -5,7 +5,7 @@ Educational project of messages processing with examples of using symfony4, dock
 
 ````
 cd <project_directory>
-docker-compose up
+docker-compose up -d
 docker-compose exec php-fpm composer install
 ````
 
