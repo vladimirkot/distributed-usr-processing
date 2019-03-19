@@ -3,8 +3,10 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * User
@@ -40,7 +42,7 @@ class User
     private $lastName;
 
     /**
-     * @var ArrayCollection
+     * @var Collection
      * One user has many phone numbers
      * @ORM\OneToMany(targetEntity="PhoneNumber", mappedBy="user", cascade={"persist", "remove"})
      *
@@ -60,6 +62,13 @@ class User
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getFirstName(): ?string
@@ -86,7 +95,7 @@ class User
         return $this;
     }
 
-    public function getPhoneNumbers(): ArrayCollection
+    public function getPhoneNumbers(): Collection
     {
         return $this->phoneNumbers;
     }

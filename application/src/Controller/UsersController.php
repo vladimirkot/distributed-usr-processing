@@ -2,38 +2,61 @@
 
 namespace App\Controller;
 
-use Doctrine\ORM\Mapping\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Serializer\SerializerInterface;
+use App\SearchEngine\UsersIndex;
+use Symfony\Component\HttpFoundation\Request;
 
 
 class UsersController extends AbstractController
 {
-    public function list(SerializerInterface $serializer, EntityManagerInterface $em)
+    public function index(Request $request, EntityManagerInterface $em, UsersIndex $usersIndex)
     {
-        $data = (new Class{
-                            public $firstName="John";
-                            public $lastName="Smith";
-                            public $phoneNumbers=["812 123-1234","916 123-4567"];
-        });
 
-        $jsonData = json_encode($data);
+        $term = $request->query->get("term");
+        $sort = $request->query->get("sort");
 
-        dump($jsonData);
+        if(!empty($term)){
+            $ids = $usersIndex->search($term);
 
-        $user = $serializer->deserialize($jsonData, User::class, "json");
+            $users = $em->getRepository(User::class)->findById($ids);
 
-        dump($user);
+            array_map(function(User $user)use($term){
+                $term = ucfirst($term);
+                $highlightedFirstName = str_replace($term, "<b>{$term}</b>", $user->getFirstName());
+                $user->setFirstName($highlightedFirstName);
+            },
+                $users);
+        }
+        elseif(!empty($sort)){
+            $users = $em->getRepository(User::class)->findBy([], ['firstName' => $sort]);
+        }
+        else{
+            $users = $em->getRepository(User::class)->findAll();
+        }
 
-        return $this->render('users/list.html.twig', [
-            'controller_name' => 'UsersController',
+
+
+        return $this->render('users/index.html.twig', [
+            "users" => $users, "sort" => $sort, "term" => $term
         ]);
     }
 
-    public function search()
+    public function search(Request $request, EntityManagerInterface $em, UsersIndex $usersIndex)
     {
-        return $this->render('users/search.html.twig', []);
+        $term = $request->query->get("term");
+
+        $ids = $usersIndex->search($term);
+
+        $foundUsers = $em->getRepository(User::class)->findById($ids);
+
+        array_map(function(User $user)use($term){
+                $highlightedFirstName = str_replace(ucfirst($term), "<b>{$term}</b>", $user->getFirstName());
+                $user->setFirstName($highlightedFirstName);
+            },
+            $foundUsers);
+
+        return $this->render('users/search.html.twig', ['term'=>ucfirst($term), 'users'=>$foundUsers]);
     }
 }

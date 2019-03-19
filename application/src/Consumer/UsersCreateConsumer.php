@@ -44,8 +44,14 @@ class UsersCreateConsumer
             $this->entityManager->persist($user);
             $this->entityManager->flush();
 
-            $this->indexProducer->publish($message->getBody());
-            echo json_encode($user).PHP_EOL;
+            $nextMessage = $this->serializer->serialize($user, ApiController::FORMAT,[
+                'circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }
+            ]);
+
+            $this->indexProducer->publish($nextMessage);
+
         } catch (Exception $e) {
             \error_log($e);
         }

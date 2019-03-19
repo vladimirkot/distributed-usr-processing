@@ -53,8 +53,7 @@ services:
         - ./docker/manticore/sphinx.conf:/etc/sphinxsearch/sphinx.conf
         - /data
       ports:
-        - "9306:9306"
-        - "9312:9312"
+        - "${SEARCH_HOST_PORT}:${SEARCH_CONTAINER_PORT}"
 
     webserver:
       image: nginx:alpine
@@ -86,3 +85,5 @@ services:
         RABBITMQ_INDEX_EXCHANGE: ${RABBITMQ_INDEX_EXCHANGE}
         RABBITMQ_INDEX_QUEUE: ${RABBITMQ_INDEX_QUEUE}
         RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:${RABBITMQ_CONTAINER_PORT}/${RABBITMQ_VHOST}
+        SEARCH_DSN: mysql:host=manticoresearch;port=${SEARCH_CONTAINER_PORT}
+        SEARCH_USERS_INDEX: usersrt

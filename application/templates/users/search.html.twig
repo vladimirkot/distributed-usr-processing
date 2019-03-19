@@ -1,7 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% endblock %}
+{% block title %}Search results{% endblock %}
 
 {% block body %}
-    <h1>Users search</h1>
+    <h2>Search term is:{{ term }}</h2>
+    <ul>
+        {% for user in users %}
+            <li>{{ user.id }}:{{ user.firstName|raw }}&nbsp;{{ user.lastName }}</li>
+        {% endfor %}
+    </ul>
 {% endblock %}

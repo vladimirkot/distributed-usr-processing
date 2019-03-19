@@ -46,3 +46,18 @@ services:
         autoconfigure: true
         arguments:
             $producer: '@old_sound_rabbit_mq.users_index_producer'
+
+    App\SearchEngine\Connection:
+        public: true
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $dsn: '%env(SEARCH_DSN)%'
+
+    App\SearchEngine\UsersIndex:
+        public: true
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $connection: '@App\SearchEngine\Connection'
+            $indexName: '%env(SEARCH_USERS_INDEX)%'

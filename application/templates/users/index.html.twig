@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}List of users{% endblock %}
+
+{% block body %}
+
+    <style>
+        form {margin:5px; padding:5px; width:300px; border:1px solid grey; border-radius:4px;}
+    </style>
+
+    <form action="?search">
+        Search:
+        <input type="search" name="term" placeholder="Search term" value="{{ term }}">
+        <input type="submit" value="Search!">
+    </form>
+
+    <form action="?sort">
+        Sort:
+        <input name="sort" type="radio" value="asc" {% if sort == 'asc' %}checked{% endif %}>Ascending ⇓
+        <input name="sort" type="radio" value="desc"{% if sort == 'desc' %}checked{% endif %}>Descending ⇑
+        <input type="submit" value="Sort!">
+    </form>
+
+    <h2>List of users{% if term %}, searched by term:{{ term }}{% endif %}</h2>
+    <ul>
+        {% for user in users %}
+            <li>{{ user.id }}:{{ user.firstName|raw }}&nbsp;{{ user.lastName }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

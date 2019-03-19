@@ -13,21 +13,25 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use App\Controller\ApiController;
+use App\SearchEngine\UsersIndex;
 
 class UsersIndexConsumer
 {
     private $serializer;
+    private $usersIndex;
 
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(SerializerInterface $serializer, UsersIndex $usersIndex)
     {
         $this->serializer = $serializer;
+        $this->usersIndex = $usersIndex;
     }
 
     public function execute(AMQPMessage $message)
     {
         try {
             $user = $this->serializer->deserialize($message->getBody(), User::class, ApiController::FORMAT);
-            echo json_encode($user).PHP_EOL;
+
+            $this->usersIndex->add($user);
         } catch (Exception $e) {
             \error_log($e);
         }

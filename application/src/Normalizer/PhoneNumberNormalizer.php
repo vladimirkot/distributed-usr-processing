@@ -32,8 +32,20 @@ class PhoneNumberNormalizer extends ObjectNormalizer
         $result = new ArrayCollection();
 
         foreach($data as $phoneNo){
+
             $phoneNumber = new PhoneNumber();
-            $phoneNumber->setPhoneNo($phoneNo);
+
+            switch (gettype($phoneNo)){
+                case "string":
+                    $phoneNumber->setPhoneNo($phoneNo);
+                    break;
+                case "array":
+                    $phoneNumber->setPhoneNo($phoneNo["phoneNo"]);
+                    $phoneNumber->setId($phoneNo["id"]);
+                    break;
+            }
+
+
             $result->add($phoneNumber);
         }
 
